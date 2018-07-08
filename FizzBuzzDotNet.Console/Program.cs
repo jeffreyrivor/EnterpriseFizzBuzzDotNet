@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FizzBuzzDotNet.Abstractions;
 using FizzBuzzDotNet.Abstractions.Interfaces;
 
 namespace FizzBuzzDotNet
@@ -14,9 +15,9 @@ namespace FizzBuzzDotNet
 
             var orderedHandler = new OrderedIterationHandler(new List<IIterationHandler>
             {
-                new DivisibleHandler(new ArbitraryStringLoggingHandler("Fizz", stringConsoleLogger), 3),
-                new DivisibleHandler(new ArbitraryStringLoggingHandler("Buzz", stringConsoleLogger), 5),
-                new IndivisibleHandler(new IndivisibleHandler(new ValueLoggingHandler(consoleLogger), 5), 3),
+                new ConditionalIterationHandler(new DivisibleChecker(3), new ArbitraryStringLoggingHandler("Fizz", stringConsoleLogger)),
+                new ConditionalIterationHandler(new DivisibleChecker(5), new ArbitraryStringLoggingHandler("Buzz", stringConsoleLogger)),
+                new ConditionalIterationHandler(new IndivisibleChecker(3, 5), new ValueLoggingHandler(consoleLogger)),
                 new ArbitraryStringLoggingHandler(Environment.NewLine, stringConsoleLogger)
             });
 
