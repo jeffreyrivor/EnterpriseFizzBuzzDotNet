@@ -7,18 +7,18 @@ namespace FizzBuzzDotNet
 {
     class OrderedPredicateValueAggregator<TInput, TOutput>
     {
-        private readonly Func<TOutput, TOutput, TOutput> _aggregateFunc;
-        private readonly Func<TInput, TOutput> _fallbackFunc;
-        private readonly IEnumerable<(Predicate<TInput> Predicate, TOutput Value)> _predicateValuePairs;
+        protected Func<TOutput, TOutput, TOutput> AggregateFunc { get; }
+        protected Func<TInput, TOutput> FallbackFunc { get; }
+        protected IEnumerable<(Predicate<TInput> Predicate, TOutput Value)> PredicateValuePairs { get; }
 
         public OrderedPredicateValueAggregator(
             Func<TOutput, TOutput, TOutput> aggregateFunc,
             Func<TInput, TOutput> fallbackFunc,
             params (Predicate<TInput>, TOutput)[] predicateValuePairs)
         {
-            _aggregateFunc = aggregateFunc;
-            _fallbackFunc = fallbackFunc;
-            _predicateValuePairs = predicateValuePairs;
+            AggregateFunc = aggregateFunc;
+            FallbackFunc = fallbackFunc;
+            PredicateValuePairs = predicateValuePairs;
         }
 
         public virtual TOutput Execute(TInput value)
@@ -33,12 +33,12 @@ namespace FizzBuzzDotNet
 
                     while (e.MoveNext())
                     {
-                        output = _aggregateFunc(output, e.Current);
+                        output = AggregateFunc(output, e.Current);
                     }
                 }
                 else
                 {
-                    output = _fallbackFunc(value);
+                    output = FallbackFunc(value);
                 }
             }
 
@@ -46,7 +46,7 @@ namespace FizzBuzzDotNet
         }
 
         protected internal IEnumerable<TOutput> ExecutePredicates(TInput input) =>
-            _predicateValuePairs.Where(i => i.Predicate(input)).Select(i => i.Value);
+            PredicateValuePairs.Where(i => i.Predicate(input)).Select(i => i.Value);
     }
 
     class OrderedIntDivisiblePredicateValueAggregator<TOutput>
@@ -66,7 +66,7 @@ namespace FizzBuzzDotNet
             var divisors = divisorValuePairs.Select(pair => pair.Divisor).ToArray();
 
             _cache = Enumerable.Range(0, GetLeastCommonMultiple(divisors))
-                .Select(i => divisors.Any(d => i % d == 0) ? CreateCachedOutputFunction(i) : fallbackFunc)
+                .Select(i => divisors.Any(d => i % d == 0) ? CreateCachedOutputFunction(i) : FallbackFunc)
                 .ToArray();
         }
 
@@ -74,7 +74,7 @@ namespace FizzBuzzDotNet
 
         private Func<int, TOutput> CreateCachedOutputFunction(int input)
         {
-            var lazy = new Lazy<TOutput>(() => base.Execute(input));
+            var lazy = new Lazy<TOutput>(() => ExecutePredicates(input).Aggregate(AggregateFunc));
 
             return _ => lazy.Value;
         }
