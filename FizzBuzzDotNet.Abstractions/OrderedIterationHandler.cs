@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using FizzBuzzDotNet.Abstractions.Interfaces;
 
-namespace FizzBuzzDotNet
+namespace FizzBuzzDotNet.Abstractions
 {
-    class OrderedIterationHandler : IIterationHandler
+    public class OrderedIterationHandler : IIterationHandler
     {
         private readonly IEnumerable<IIterationHandler> _handlers;
 
