@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using FizzBuzzDotNet.Abstractions;
-using FizzBuzzDotNet.Abstractions.Interfaces;
+using Microsoft.Extensions.Primitives;
 
 namespace FizzBuzzDotNet
 {
@@ -10,21 +10,46 @@ namespace FizzBuzzDotNet
     {
         static void Main(string[] args)
         {
-            var consoleLogger = new ConsoleLogger<int>();
-            var stringConsoleLogger = new StringConsoleLogger();
+            var fizzBuzz = new StringSegment("FizzBuzz");
 
-            var orderedHandler = new OrderedIterationHandler(new List<IIterationHandler>
-            {
-                new ConditionalIterationHandler(new DivisibleChecker(3), new ArbitraryStringLoggingHandler("Fizz", stringConsoleLogger)),
-                new ConditionalIterationHandler(new DivisibleChecker(5), new ArbitraryStringLoggingHandler("Buzz", stringConsoleLogger)),
-                new ConditionalIterationHandler(new IndivisibleChecker(3, 5), new ValueLoggingHandler(consoleLogger)),
-                new ArbitraryStringLoggingHandler(Environment.NewLine, stringConsoleLogger)
-            });
+            var results = new List<string>(10000000);
 
-            foreach (var i in Enumerable.Range(1, 100))
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            foreach (var i in Enumerable.Range(1, 10000000))
             {
-                orderedHandler.Handle(i);
+                var idx = 4; // 'B' at beginning of 'Buzz' in char array
+                var count = 0; // no letters to print from char array
+
+                if (i % 3 == 0)
+                {
+                    idx = 0; // 'F' at beginning of 'Fizz' in char array
+                    count += 4; // letters to print = 'Fizz'
+                }
+
+                if (i % 5 == 0)
+                {
+                    count += 4; // add letters to print = 'Buzz'; when both i % 3 and i % 5, letters to print = 'FizzBuzz'
+                }
+
+                if (count > 0)
+                {
+                    results.Add(fizzBuzz.Substring(idx, count));
+                }
+                else
+                {
+                    results.Add(i.ToString());
+                }
             }
+
+            stopwatch.Stop();
+
+            //foreach (var line in results)
+            //{
+            //    Console.WriteLine(line);
+            //}
+
+            Console.WriteLine(stopwatch.Elapsed);
 
             Console.ReadLine();
         }
