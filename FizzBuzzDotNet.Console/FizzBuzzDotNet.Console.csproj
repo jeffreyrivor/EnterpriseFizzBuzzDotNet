@@ -1,12 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FizzBuzzDotNet.Abstractions\FizzBuzzDotNet.Abstractions.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>FizzBuzzDotNet</RootNamespace>
   </PropertyGroup>
 

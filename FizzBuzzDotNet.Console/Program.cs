@@ -1,30 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using FizzBuzzDotNet.Abstractions;
-using FizzBuzzDotNet.Abstractions.Interfaces;
 
 namespace FizzBuzzDotNet
 {
     class Program
     {
+        private static string Aggregate(IEnumerable<string> inputs) =>
+            inputs.Aggregate((curr, next) => curr + next);
+
         static void Main(string[] args)
         {
-            var consoleLogger = new ConsoleLogger<int>();
-            var stringConsoleLogger = new StringConsoleLogger();
+            var executor = new CachedIntDivisibleValueGenerator<string>(
+                new ValuesAggregatorDelegate<string, string>(Aggregate),
+                value => value.ToString(),
+                (3, "Fizz"),
+                (5, "Buzz"));
 
-            var orderedHandler = new OrderedIterationHandler(new List<IIterationHandler>
-            {
-                new ConditionalIterationHandler(new DivisibleChecker(3), new ArbitraryStringLoggingHandler("Fizz", stringConsoleLogger)),
-                new ConditionalIterationHandler(new DivisibleChecker(5), new ArbitraryStringLoggingHandler("Buzz", stringConsoleLogger)),
-                new ConditionalIterationHandler(new IndivisibleChecker(3, 5), new ValueLoggingHandler(consoleLogger)),
-                new ArbitraryStringLoggingHandler(Environment.NewLine, stringConsoleLogger)
-            });
+            var results = new List<string>(10000000);
 
-            foreach (var i in Enumerable.Range(1, 100))
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            foreach (var i in Enumerable.Range(1, 10000000))
             {
-                orderedHandler.Handle(i);
+                results.Add(executor.Execute(i));
             }
+
+            stopwatch.Stop();
+
+            foreach (var line in results.Take(30))
+            {
+                Console.WriteLine(line);
+            }
+
+            Console.WriteLine(stopwatch.Elapsed);
 
             Console.ReadLine();
         }
