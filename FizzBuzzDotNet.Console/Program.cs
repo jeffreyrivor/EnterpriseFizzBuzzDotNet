@@ -12,7 +12,7 @@ namespace FizzBuzzDotNet
         {
             var fizzBuzz = new StringSegment("FizzBuzz");
 
-            var results = new List<string>(10000000);
+            var results = new List<StringSegment>(10000000);
 
             Stopwatch stopwatch = Stopwatch.StartNew();
 
@@ -34,7 +34,7 @@ namespace FizzBuzzDotNet
 
                 if (count > 0)
                 {
-                    results.Add(fizzBuzz.Substring(idx, count));
+                    results.Add(fizzBuzz.Subsegment(idx, count));
                 }
                 else
                 {
