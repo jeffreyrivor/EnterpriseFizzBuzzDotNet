@@ -44,10 +44,10 @@ namespace FizzBuzzDotNet
 
             stopwatch.Stop();
 
-            //foreach (var line in results)
-            //{
-            //    Console.WriteLine(line);
-            //}
+            foreach (var line in results.Take(30))
+            {
+                Console.WriteLine(line);
+            }
 
             Console.WriteLine(stopwatch.Elapsed);
 
