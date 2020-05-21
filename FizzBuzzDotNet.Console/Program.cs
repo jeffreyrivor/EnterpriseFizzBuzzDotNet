@@ -34,6 +34,8 @@ namespace FizzBuzzDotNet
             Default
         };
 
+        static string Generate(int i) => Generators[i % Generators.Length](i);
+
         static void Main(string[] args)
         {
             var results = new List<string>(10000000);
@@ -42,7 +44,7 @@ namespace FizzBuzzDotNet
 
             foreach (var i in Enumerable.Range(1, 10000000))
             {
-                results.Add(Generators[i % Generators.Length](i));
+                results.Add(Generate(i));
             }
 
             stopwatch.Stop();
