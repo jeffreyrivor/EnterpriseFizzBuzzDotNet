@@ -7,34 +7,10 @@ namespace FizzBuzzDotNet
 {
     class Program
     {
-        static string Fizz(int _) => "Fizz";
+        static readonly Func<int, string>[] FunctionCache = GenerateFunctionCache(15, i => i.ToString(),
+            (i, j) => i + j, (i => i % 3 == 0, "Fizz"), (i => i % 5 == 0, "Buzz")).ToArray();
 
-        static string Buzz(int _) => "Buzz";
-
-        static string FizzBuzz(int _) => "FizzBuzz";
-
-        static string Default(int i) => i.ToString();
-
-        static Func<int, string>[] Generators = new Func<int, string>[]
-        {
-            FizzBuzz,
-            Default,
-            Default,
-            Fizz,
-            Default,
-            Buzz,
-            Fizz,
-            Default,
-            Default,
-            Fizz,
-            Buzz,
-            Default,
-            Fizz,
-            Default,
-            Default
-        };
-
-        static string Generate(int i) => Generators[i % Generators.Length](i);
+        static string Generate(int i) => FunctionCache[i % FunctionCache.Length](i);
 
         static void Main(string[] args)
         {
@@ -58,5 +34,25 @@ namespace FizzBuzzDotNet
 
             Console.ReadLine();
         }
+
+        static IEnumerable<Func<int, TOutput>> GenerateFunctionCache<TOutput>(int range, Func<int, TOutput> defaultFunc,
+            Func<TOutput, TOutput, TOutput> aggregator, params (Func<int, bool> predicate, TOutput output)[] staticOutputs) =>
+            Enumerable.Range(0, range).Select(i =>
+            {
+                using var outputEnumerator = staticOutputs.Where(p => p.predicate(i)).Select(p => p.output).GetEnumerator();
+
+                if (!outputEnumerator.MoveNext())
+                {
+                    return defaultFunc;
+                }
+
+                var output = outputEnumerator.Current;
+                while (outputEnumerator.MoveNext())
+                {
+                    output = aggregator(output, outputEnumerator.Current);
+                }
+
+                return _ => output;
+            });
     }
 }
