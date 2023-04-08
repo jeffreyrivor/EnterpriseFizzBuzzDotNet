@@ -8,14 +8,11 @@ namespace FizzBuzzDotNet
 {
     class Program
     {
-        private static string Aggregate(IEnumerable<string> inputs) =>
-            inputs.Aggregate((curr, next) => curr + next);
-
         static void Main(string[] args)
         {
             var executor = new CachedIntDivisibleValueGenerator<string>(
-                new ValuesAggregatorDelegate<string, string>(Aggregate),
-                value => value.ToString(),
+                new ValuesAggregatorDelegate<string, string>(string.Concat),
+                Convert.ToString,
                 (3, "Fizz"),
                 (5, "Buzz"));
 
