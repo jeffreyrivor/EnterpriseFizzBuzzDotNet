@@ -7,8 +7,8 @@ namespace FizzBuzzDotNet
 {
     class Program
     {
-        static readonly Func<int, string>[] FunctionCache = GenerateFunctionCache(15, i => i.ToString(),
-            (i, j) => i + j, (i => i % 3 == 0, "Fizz"), (i => i % 5 == 0, "Buzz")).ToArray();
+        static readonly Func<int, string>[] FunctionCache = GenerateFunctionCache(15, Convert.ToString,
+            string.Concat, (i => i % 3 == 0, "Fizz"), (i => i % 5 == 0, "Buzz")).ToArray();
 
         static string Generate(int i) => FunctionCache[i % FunctionCache.Length](i);
 
