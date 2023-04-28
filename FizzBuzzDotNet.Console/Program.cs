@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using FizzBuzzDotNet.Abstractions;
 
 namespace FizzBuzzDotNet
 {
@@ -10,9 +9,9 @@ namespace FizzBuzzDotNet
     {
         static void Main(string[] args)
         {
-            var executor = new CachedIntDivisibleValueGenerator<string>(
-                new ValuesAggregatorDelegate<string, string>(string.Concat),
+            var executor = new DivisibleNumberMapReduce<int, string, string>(
                 Convert.ToString,
+                string.Concat,
                 (3, "Fizz"),
                 (5, "Buzz"));
 
